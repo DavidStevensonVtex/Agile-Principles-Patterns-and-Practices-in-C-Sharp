@@ -24,58 +24,72 @@ using System;
 
 public class GeneratePrimes
 {
+    private static int s;
+    private static bool[] f;
+    private static int[] primes;
+
     /// <summary>
     /// Generates an array of primary numbers.
     /// </summary>
     public static int[] GeneratePrimeNumbers(int maxValue)
     {
-        if (maxValue >= 2)      // the only valid case
+        if (maxValue < 2)
+            return new int[0];
+        else
         {
-            // declarations
-            int s = maxValue + 1;       // size of array
-            bool[] f = new bool[s];
-            int i;
-
-            // initialize array to true.
-            for (i = 0; i < s; i++)
-                f[i] = true;
-
-            // get rid of known non-primes
-            f[0] = f[1] = false;
-
-            // sieve
-            int j;
-            for (i = 2; i < Math.Sqrt(s) + 1; i++)
-            {
-                if (f[i])       // if i is uncrossed, cross its multiples.
-                {
-                    for (j = 2 * i; j < s; j += i)
-                    {
-                        f[j] = false;       // Multiple is not prime
-                    }
-                }
-            }
-
-            // how many primes are there?
-            int count = 0;
-            for ( i = 0; i < s; i++ )
-            {
-                if (f[i])
-                    count++;    // bump count
-            }
-
-            int[] primes = new int[count];
-
-            // move the primes into the result
-            for (i = 0, j = 0; i < s; i++)
-            {
-                if (f[i])           // if prime
-                    primes[j++] = i;
-            }
-
+            InitializeSieve(maxValue);
+            Sieve();
+            LoadPrimes();
             return primes;      // return the primes
         }
-        else // maxValue < 2
-            return new int[0];      // return null array if bad input
+    }
+
+    private static void LoadPrimes()
+    {
+        // How many primes are there?
+        int count = 0;
+        for (int i = 0; i < s; i++)
+        {
+            if (f[i])
+                count++;    // bump count
+        }
+
+        primes = new int[count];
+
+        // move the primes into the result
+        for (int i = 0, j = 0; i < s; i++)
+        {
+            if (f[i])           // if prime
+                primes[j++] = i;
+        }
+    }
+
+
+    private static void Sieve()
+    {
+        for (int i = 2; i < Math.Sqrt(s) + 1; i++)
+        {
+            if (f[i])       // if i is uncrossed, cross its multiples.
+            {
+                for (int j = 2 * i; j < s; j += i)
+                {
+                    f[j] = false;       // Multiple is not prime
+                }
+            }
+        }
+    }
+    
+    private static void InitializeSieve(int maxValue)
+    {
+        // declarations
+        s = maxValue + 1;       // size of array
+        f = new bool[s];
+
+        // initialize array to true.
+        for (int i = 0; i < s; i++)
+            f[i] = true;
+
+        // get rid of known non-primes
+        f[0] = f[1] = false;
     }
 }
