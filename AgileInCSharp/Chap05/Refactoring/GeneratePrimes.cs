@@ -56,11 +56,18 @@ public class GeneratePrimes
                 }
             }
 
+            // how many primes are there?
             int count = 0;
+            for ( i = 0; i < s; i++ )
+            {
+                if (f[i])
+                    count++;    // bump count
+            }
+
             int[] primes = new int[count];
 
             // move the primes into the result
-            for (i = 0, j = 0; j < s; i++)
+            for (i = 0, j = 0; i < s; i++)
             {
                 if (f[i])           // if prime
                     primes[j++] = i;
