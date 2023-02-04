@@ -24,8 +24,8 @@ using System;
 
 public class GeneratePrimes
 {
-    private static bool[] f;
-    private static int[] primes;
+    private static bool[] isCrossed;
+    private static int[] result;
 
     /// <summary>
     /// Generates an array of primary numbers.
@@ -37,53 +37,73 @@ public class GeneratePrimes
         else
         {
             InitializeArrayOfIntegers(maxValue);
-            Sieve();
-            LoadPrimes();
-            return primes;      // return the primes
+            CrossOutMultiples();
+            PutUncrossedIntegersIntoResults();
+            return result;      // return the primes
         }
     }
 
-    private static void LoadPrimes()
+    private static void PutUncrossedIntegersIntoResults()
     {
-        // How many primes are there?
-        int count = 0;
-        for (int i = 0; i < f.Length; i++)
+        result = new int[NumberOfUncrossedIntegers()];
+        for (int i = 0, j = 0; i < isCrossed.Length; i++)
         {
-            if (f[i])
+            if (NotCrossed(i))           // if prime
+                result[j++] = i;
+        }
+    }
+
+    private static int NumberOfUncrossedIntegers()
+    {
+        int count = 0;
+        for (int i = 0; i < isCrossed.Length; i++)
+        {
+            if (NotCrossed(i))
                 count++;    // bump count
         }
 
-        primes = new int[count];
-
-        // move the primes into the result
-        for (int i = 0, j = 0; i < f.Length; i++)
-        {
-            if (f[i])           // if prime
-                primes[j++] = i;
-        }
+        return count;
     }
 
-
-    private static void Sieve()
-    {
-        for (int i = 2; i < Math.Sqrt(f.Length) + 1; i++)
-        {
-            if (f[i])       // if i is uncrossed, cross its multiples.
-            {
-                for (int j = 2 * i; j < f.Length; j += i)
-                {
-                    f[j] = false;       // Multiple is not prime
-                }
-            }
-        }
-    }
-    
     private static void InitializeArrayOfIntegers(int maxValue)
     {
-        // declarations
-        f = new bool[maxValue + 1];
-        f[0] = f[1] = false;        // Neither primes nor multiples.
-        for (int i = 2; i < f.Length; i++)
-            f[i] = true;
+        isCrossed = new bool[maxValue + 1];
+        isCrossed[0] = isCrossed[1] = true;
+        for (int i = 2; i < isCrossed.Length; i++)
+            isCrossed[i] = false;
+    }
+
+    private static void CrossOutMultiples()
+    {
+        int maxPrimeFactor = CalcMaxPrimeFactor();
+        for (int i = 2; i < maxPrimeFactor + 1; i++)
+        {
+            if (NotCrossed(i))
+                CrossOutMultiplesOf(i);
+        }
+    }
+
+    private static int CalcMaxPrimeFactor()
+    {
+        // We cross out all multiples of p, where p is prime.
+        // Thus, all crossed out multiples have p and q for 
+        // factors. If p > sqrt of the size of the array, then
+        // q will never be greater than 1. Thus p is the 
+        // largest prime factor in the array and is also 
+        // the iteration limit.
+
+        double maxPrimeFactor = Math.Sqrt(isCrossed.Length) + 1;
+        return (int)maxPrimeFactor;
+    }
+
+    private static void CrossOutMultiplesOf(int i)
+    {
+        for (int multiple = 2 * i; multiple < isCrossed.Length; multiple += i)
+            isCrossed[multiple] = true;
+    }
+
+    private static bool NotCrossed(int i)
+    {
+        return isCrossed[i] == false;
     }
 }
