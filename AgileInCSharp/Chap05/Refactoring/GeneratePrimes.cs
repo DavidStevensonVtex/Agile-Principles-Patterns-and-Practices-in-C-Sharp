@@ -24,7 +24,6 @@ using System;
 
 public class GeneratePrimes
 {
-    private static int s;
     private static bool[] f;
     private static int[] primes;
 
@@ -37,7 +36,7 @@ public class GeneratePrimes
             return new int[0];
         else
         {
-            InitializeSieve(maxValue);
+            InitializeArrayOfIntegers(maxValue);
             Sieve();
             LoadPrimes();
             return primes;      // return the primes
@@ -48,7 +47,7 @@ public class GeneratePrimes
     {
         // How many primes are there?
         int count = 0;
-        for (int i = 0; i < s; i++)
+        for (int i = 0; i < f.Length; i++)
         {
             if (f[i])
                 count++;    // bump count
@@ -57,7 +56,7 @@ public class GeneratePrimes
         primes = new int[count];
 
         // move the primes into the result
-        for (int i = 0, j = 0; i < s; i++)
+        for (int i = 0, j = 0; i < f.Length; i++)
         {
             if (f[i])           // if prime
                 primes[j++] = i;
@@ -67,11 +66,11 @@ public class GeneratePrimes
 
     private static void Sieve()
     {
-        for (int i = 2; i < Math.Sqrt(s) + 1; i++)
+        for (int i = 2; i < Math.Sqrt(f.Length) + 1; i++)
         {
             if (f[i])       // if i is uncrossed, cross its multiples.
             {
-                for (int j = 2 * i; j < s; j += i)
+                for (int j = 2 * i; j < f.Length; j += i)
                 {
                     f[j] = false;       // Multiple is not prime
                 }
@@ -79,17 +78,12 @@ public class GeneratePrimes
         }
     }
     
-    private static void InitializeSieve(int maxValue)
+    private static void InitializeArrayOfIntegers(int maxValue)
     {
         // declarations
-        s = maxValue + 1;       // size of array
-        f = new bool[s];
-
-        // initialize array to true.
-        for (int i = 0; i < s; i++)
+        f = new bool[maxValue + 1];
+        f[0] = f[1] = false;        // Neither primes nor multiples.
+        for (int i = 2; i < f.Length; i++)
             f[i] = true;
-
-        // get rid of known non-primes
-        f[0] = f[1] = false;
     }
 }
