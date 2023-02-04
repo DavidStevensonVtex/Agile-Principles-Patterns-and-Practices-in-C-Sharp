@@ -24,7 +24,7 @@ using System;
 
 public class GeneratePrimes
 {
-    private static bool[] isCrossed;
+    private static bool[] crossedOut;
     private static int[] result;
 
     /// <summary>
@@ -36,7 +36,7 @@ public class GeneratePrimes
             return new int[0];
         else
         {
-            InitializeArrayOfIntegers(maxValue);
+            UncrossIntegersUpTo(maxValue);
             CrossOutMultiples();
             PutUncrossedIntegersIntoResults();
             return result;      // return the primes
@@ -46,7 +46,7 @@ public class GeneratePrimes
     private static void PutUncrossedIntegersIntoResults()
     {
         result = new int[NumberOfUncrossedIntegers()];
-        for (int i = 0, j = 0; i < isCrossed.Length; i++)
+        for (int i = 0, j = 0; i < crossedOut.Length; i++)
         {
             if (NotCrossed(i))           // if prime
                 result[j++] = i;
@@ -56,7 +56,7 @@ public class GeneratePrimes
     private static int NumberOfUncrossedIntegers()
     {
         int count = 0;
-        for (int i = 0; i < isCrossed.Length; i++)
+        for (int i = 0; i < crossedOut.Length; i++)
         {
             if (NotCrossed(i))
                 count++;    // bump count
@@ -65,12 +65,12 @@ public class GeneratePrimes
         return count;
     }
 
-    private static void InitializeArrayOfIntegers(int maxValue)
+    private static void UncrossIntegersUpTo(int maxValue)
     {
-        isCrossed = new bool[maxValue + 1];
-        isCrossed[0] = isCrossed[1] = true;
-        for (int i = 2; i < isCrossed.Length; i++)
-            isCrossed[i] = false;
+        crossedOut = new bool[maxValue + 1];
+        crossedOut[0] = crossedOut[1] = true;
+        for (int i = 2; i < crossedOut.Length; i++)
+            crossedOut[i] = false;
     }
 
     private static void CrossOutMultiples()
@@ -85,25 +85,23 @@ public class GeneratePrimes
 
     private static int CalcMaxPrimeFactor()
     {
-        // We cross out all multiples of p, where p is prime.
-        // Thus, all crossed out multiples have p and q for 
-        // factors. If p > sqrt of the size of the array, then
-        // q will never be greater than 1. Thus p is the 
-        // largest prime factor in the array and is also 
-        // the iteration limit.
+        // Every multiple in the aray has a prime factor that,
+        // is less than or equal to the root of the array size.
+        // so we dont have to cross off multiples of numbers 
+        // larger than the root.
 
-        double maxPrimeFactor = Math.Sqrt(isCrossed.Length) + 1;
+        double maxPrimeFactor = Math.Sqrt(crossedOut.Length);
         return (int)maxPrimeFactor;
     }
 
     private static void CrossOutMultiplesOf(int i)
     {
-        for (int multiple = 2 * i; multiple < isCrossed.Length; multiple += i)
-            isCrossed[multiple] = true;
+        for (int multiple = 2 * i; multiple < crossedOut.Length; multiple += i)
+            crossedOut[multiple] = true;
     }
 
     private static bool NotCrossed(int i)
     {
-        return isCrossed[i] == false;
+        return crossedOut[i] == false;
     }
 }
