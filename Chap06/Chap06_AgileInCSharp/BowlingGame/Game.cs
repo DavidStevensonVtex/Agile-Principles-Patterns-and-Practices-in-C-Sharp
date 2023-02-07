@@ -13,6 +13,8 @@ namespace BowlingGame
         private int score;
         private int [] throws = new int [21] ;
         private int currentThrow;
+        private int ball;
+
 
         public int Score
         {
@@ -52,29 +54,70 @@ namespace BowlingGame
 
         public int ScoreForFrame(int theFrame)
         {
-            int ball = 0;
+            ball = 0;
             int score = 0;
             for (int currentFrame = 0; currentFrame < theFrame; currentFrame++ )
             {
-                int firstThrow = throws[ball++];
-                if (firstThrow == 10)   // Strike
+                if (Strike())
                 {
-                    score += 10 + throws[ball] + throws[ball + 1];
+                    ball++;
+                    score += 10 + NextTwoBalls;
+                }
+                else if (Spare())
+                {
+                    ball += 2;
+                    score += 10 + NextBall;
                 }
                 else
                 {
-                    int secondThrow = throws[ball++];
-                    int frameScore = firstThrow + secondThrow;
-
-                    // spare needs next frames first throw
-                    if (frameScore == 10)
-                        score += frameScore + throws[ball];
-                    else
-                        score += frameScore;
+                    score += HandleSecondThrow();
                 }
             }
 
             return score;
+        }
+
+        private bool Strike()
+        {
+            return throws[ball] == 10;
+        }
+
+        private int NextTwoBalls
+        {
+            get { return (throws[ball] + throws[ball + 1]);  }
+        }
+
+        private int HandleSecondThrow()
+        {
+            int score = 0;
+            // spare needs next frames first throw
+            if (Spare())
+            {
+                ball += 2;
+                score += 10 + NextBall;
+            }
+            else
+            {
+                score += TwoBallsInFrame;
+                ball += 2;
+            }
+
+            return score;
+        }
+
+        private int TwoBallsInFrame
+        {
+            get { return throws[ball] + throws[ball + 1]; }
+        }
+
+        private bool Spare()
+        {
+            return throws[ball] + throws[ball + 1] == 10;
+        }
+
+        private int NextBall
+        {
+            get { return throws[ball]; }
         }
     }
 }
