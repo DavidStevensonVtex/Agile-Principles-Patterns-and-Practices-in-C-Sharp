@@ -97,5 +97,54 @@ namespace BowlingGame.Tests
             Assert.AreEqual(300, game.Score);
             Assert.AreEqual(11, game.CurrentFrame);
         }
+
+        [Test]
+        public void TestEndOfArray()
+        {
+            for (int i = 0; i < 9; i++ )
+            {
+                game.Add(0);
+                game.Add(0);
+            }
+
+            game.Add(2);
+            game.Add(8);        // 10th frame spare
+            game.Add(10);
+            Assert.AreEqual(20, game.Score);
+        }
+
+        [Test]
+        public void TestSampleGame()
+        {
+            game.Add(1);
+            game.Add(4);
+            game.Add(4);
+            game.Add(5);
+            game.Add(6);
+            game.Add(4);
+            game.Add(5);
+            game.Add(5);
+            game.Add(10);
+            game.Add(0);
+            game.Add(1);
+            game.Add(7);
+            game.Add(3);
+            game.Add(6);
+            game.Add(4);
+            game.Add(10);
+            game.Add(2);
+            game.Add(8);
+            game.Add(6);
+            Assert.AreEqual(133, game.Score);
+        }
+
+        [Test]
+        public void TestHeartBreak()
+        {
+            for (int i = 0; i < 11; i++)
+                game.Add(10);
+            game.Add(9);
+            Assert.AreEqual(299, game.Score);
+        }
     }
 }
