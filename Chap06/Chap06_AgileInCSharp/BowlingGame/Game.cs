@@ -8,116 +8,51 @@ namespace BowlingGame
 {
     public class Game
     {
-        private int currentFrame = 1;
+        private int currentFrame = 0;
         private bool isFirstThrow = true;
-        private int score;
-        private int [] throws = new int [21] ;
-        private int currentThrow;
-        private int ball;
+        private Scorer scorer = new Scorer();
 
 
         public int Score
         {
-            get { return ScoreForFrame(currentFrame - 1) ; }
-        }
-        public int CurrentFrame
-        {
-            get { return currentFrame; }
+            get { return ScoreForFrame(currentFrame) ; }
         }
 
         public void Add(int pins)
         {
-            throws[currentThrow++] = pins;
-            score += pins;
-
+            scorer.AddThrow(pins);
             AdjustCurrentFrame(pins);
         }
 
         private void AdjustCurrentFrame(int pins)
         {
-            if (isFirstThrow)
-            {
-                if (pins == 10)
-                    currentFrame++;
-                else
-                    isFirstThrow = false;
-            }
+            if (LastBallInFrame(pins))
+                AdvanceFrame();
             else
-            {
-                isFirstThrow = true;
-                currentFrame++;
-            }
+                isFirstThrow = false;
+        }
 
-            if (currentFrame > 11)
-                currentFrame = 11;
+        private bool LastBallInFrame(int pins)
+        {
+            return Strike(pins) || (!isFirstThrow);
+        }
+
+        private bool Strike(int pins)
+        {
+            return (isFirstThrow && pins == 10);
+        }
+
+        private void AdvanceFrame()
+        {
+            isFirstThrow = true;
+            currentFrame++;
+            if (currentFrame > 10)
+                currentFrame = 10;
         }
 
         public int ScoreForFrame(int theFrame)
         {
-            ball = 0;
-            int score = 0;
-            for (int currentFrame = 0; currentFrame < theFrame; currentFrame++ )
-            {
-                if (Strike())
-                {
-                    score += 10 + NextTwoBallsForStrike;
-                    ball++;
-                }
-                else if (Spare())
-                {
-                    score += 10 + NextBallForSpare;
-                    ball += 2;
-                }
-                else
-                {
-                    score += HandleSecondThrow();
-                }
-            }
-
-            return score;
-        }
-
-        private bool Strike()
-        {
-            return throws[ball] == 10;
-        }
-
-        private int NextTwoBallsForStrike
-        {
-            get { return (throws[ball + 1] + throws[ball + 2]);  }
-        }
-
-        private int HandleSecondThrow()
-        {
-            int score = 0;
-            // spare needs next frames first throw
-            if (Spare())
-            {
-                ball += 2;
-                score += 10 + NextBallForSpare;
-            }
-            else
-            {
-                score += TwoBallsInFrame;
-                ball += 2;
-            }
-
-            return score;
-        }
-
-        private int TwoBallsInFrame
-        {
-            get { return throws[ball] + throws[ball + 1]; }
-        }
-
-        private bool Spare()
-        {
-            return throws[ball] + throws[ball + 1] == 10;
-        }
-
-        private int NextBallForSpare
-        {
-            get { return throws[ball + 2]; }
+            return scorer.ScoreForFrame(theFrame);
         }
     }
 }
